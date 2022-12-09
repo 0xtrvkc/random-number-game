@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8" />
+
+    <title>Number guessing game</title>
+
+    <link rel="stylesheet" href="https://unpkg.com/98.css" />
+  </head>
+
+  <body
+    style="
+      background-color: #dfdfdf;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    "
+  >
+    <div class="window" style="width: 400px">
+      <div class="title-bar">
+        <div class="title-bar-text">number guessing game</div>
+      </div>
+      <div class="window-body">
+        <p style="display: flex;justify-content: center;">
+          guess a random number between 1 - 1,000,000<br>
+          I'll tell you if your guess was too high or low
+        </p>
+        
+        <ul>
+          <li>
+            <div class="form">
+              <label for="guessField">enter a guess: </label>
+              <input type="text" id="guessField" class="guessField" />
+              <input type="submit" value="Submit guess" class="guessSubmit" />
+            </div>
+          </li>
+
+          <div class="resultParas">
+            <p class="guesses"></p>
+            <p class="lastResult"></p>
+            <p class="lowOrHi"></p>
+            <p id='turnsLeft'></p>
+          </div>
+        </ul>
+      </div>
+      
+      <div class="status-bar">
+        <p class="status-bar-field">only 10 turns</p>
+        <p class="status-bar-field">hit me with your best shot</p>
+        <p class="status-bar-field">use  ANYTHING  to win this game</p>
+      </div>
+    </div>
+  </body>
+
+  <script>
+    let ANYTHING = Math.floor(Math.random() * 1000000) + 1; //fixed from Math.floor(Math.random()) + 1; to Math.floor(Math.random() * 100) + 1
+    const guesses = document.querySelector(".guesses");
+    const lastResult = document.querySelector(".lastResult");
+    const lowOrHi = document.querySelector(".lowOrHi"); // fixed from lowOrHi to .lowOrHi
+
+    const guessSubmit = document.querySelector(".guessSubmit");
+    const guessField = document.querySelector(".guessField");
+
+    let guessCount = 1;
+    let resetButton;
+
+    function checkGuess() {
+      const userGuess = Number(guessField.value);
+      if (guessCount === 1) {
+        guesses.textContent = "Previous guesses: ";
+      }
+      guesses.textContent += userGuess + " ";
+
+      if (userGuess === ANYTHING) {
+        lastResult.textContent = "SMARTASS";
+        lastResult.style.backgroundColor = "green";
+        lowOrHi.textContent = "";
+        setGameOver();
+      } else if (guessCount === 10) {
+        lastResult.textContent = "!!!GAME OVER!!!";
+        setGameOver();
+      } else {
+        lastResult.textContent = "you are not going to make it";
+        lastResult.style.backgroundColor = "red";
+        if (userGuess < ANYTHING) {
+          lowOrHi.textContent = "Last guess was too low!",document.getElementById("turnsLeft").innerHTML = "Turn(s)--- " + "[" + guessCount + "]";
+        } else if (userGuess > ANYTHING) {
+          lowOrHi.textContent = "Last guess was too high!",document.getElementById("turnsLeft").innerHTML = "Turn(s)--- " + "[" + guessCount + "]";
+        }
+      }
+
+      guessCount++;
+      guessField.value = "";
+      guessField.focus();
+      //document.getElementById("turnsLeft").innerHTML = "Turn(s)--- " + "[" + guessCount + "]"
+    }
+    guessSubmit.addEventListener("click", checkGuess); //guessSubmit.addeventListener('click', checkGuess); < fixed addeventListener to addEventListener
+
+    function setGameOver() {
+      guessField.disabled = true;
+      guessSubmit.disabled = true;
+      resetButton = document.createElement("button");
+      resetButton.textContent = "Start new game";
+      document.body.appendChild(resetButton);
+      resetButton.addEventListener("click", resetGame); //resetButton.addEventListener('click', resetGame); < fixed addeventListener to addEventListener
+    }
+
+    function resetGame() {
+      guessCount = 1;
+
+      const resetParas = document.querySelectorAll(".resultParas p");
+      for (const resetPara of resetParas) {
+        resetPara.textContent = "";
+      }
+      resetButton.parentNode.removeChild(resetButton);
+
+      guessField.disabled = false;
+      guessSubmit.disabled = false;
+      guessField.value = "";
+      guessField.focus();
+
+      lastResult.style.backgroundColor = "white";
+
+      ANYTHING = Math.floor(Math.random() * 1000000) + 1; //fixed from Math.floor(Math.random()) + 1; to Math.floor(Math.random() * 100) + 1
+    }
+  </script>
+</html>
